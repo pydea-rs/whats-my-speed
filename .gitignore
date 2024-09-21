@@ -1,0 +1,6 @@
+env/
+*.mp4
+yolo/
+*.mp4
+.idea
+*.iml
