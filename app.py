@@ -2,9 +2,15 @@ import cv2
 import numpy as np
 from collections import deque
 
+def abs(n: float):
+    return n if n >= 0 else -n
+
+def precision(estimate, actual):
+    return 100 * (1 - abs(estimate - actual)/actual)
+
 def load_yolo():
-    config_path = "yolo/yolov3.cfg"
-    weights_path = "yolo/yolov3.weights"
+    config_path = "yolo/yolov4-tiny.cfg"
+    weights_path = "yolo/yolov4-tiny.weights"
     names_path = "yolo/coco.names"
 
     net = cv2.dnn.readNet(weights_path, config_path)
@@ -101,7 +107,9 @@ def detect_vehicles(video_path):
                 last_positions[vehicle_id] = current_position
 
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                speed_text = f'{vehicle_speeds.get(vehicle_id, (0.0, 0.0))[1]:.2f} km/h'
+                estimate = vehicle_speeds.get(vehicle_id, (0.0, 0.0))[1]
+                print('70:', precision(estimate, 70), "80: ", precision(estimate, 80), "90: ", precision(estimate, 90))
+                speed_text = f'{estimate:.2f} km/h'
                 cv2.putText(frame, speed_text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
 
         cv2.imshow("Traffic Camera", frame)
@@ -113,5 +121,5 @@ def detect_vehicles(video_path):
 
 
 if __name__ == "__main__":
-    video_path = "Video.mp4"
+    video_path = "File0010.mp4"
     detect_vehicles(video_path)
